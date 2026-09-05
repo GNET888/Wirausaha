@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="id" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Berita Angin Harian - Fokus Pembangunan Proyek Wirausaha & Kemitraan Strategis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary': '#005C9E', 
+                        'secondary': '#212121', 
+                        'accent': '#FFD700', 
+                        'dark-bg': '#121212',
+                        'dark-surface': '#1e1e1e',
+                        'dark-text': '#e0e0e0',
+                        'dark-text-secondary': '#a0a0a0',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            @apply bg-gray-100 dark:bg-dark-bg text-secondary dark:text-dark-text;
+        }
+        .kompas-header {
+            @apply text-2xl font-bold text-primary border-b-4 border-primary pb-2 mb-4;
+        }
+        .terpopuler-header {
+            @apply text-xl font-bold text-white bg-primary text-center py-2 mb-4 rounded-t-lg;
+        }
+        .group:hover .group-hover-image {
+            transform: scale(1.05);
+        }
+        #main-header.sticky {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            animation: slideDown 0.3s ease-in-out;
+            @apply shadow-lg;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+        .placeholder-for-sticky { display: none; }
+        #main-header.sticky + .placeholder-for-sticky { display: block; }
+        
+        .article-title-hover:hover {
+            @apply text-primary cursor-pointer;
+        }
+        .terpopuler-item .number {
+            color: #ccc;
+            -webkit-text-stroke: 1px #005C9E;
+            text-stroke: 1px #005C9E;
+        }
+        .terpopuler-item:hover .number {
+            color: #005C9E;
+            -webkit-text-stroke: 0;
+            text-stroke: 0;
+        }
+        .page-view {
+            display: none;
+        }
+        .page-view.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div id="root" class="bg-gray-100 dark:bg-dark-bg">
+        <!-- Header -->
+        <header id="main-header" class="bg-white dark:bg-dark-surface w-full transition-all duration-300 border-b-2 border-gray-200 dark:border-gray-700">
+            <div class="container mx-auto px-4">
+                <!-- Top Bar -->
+                <div class="hidden md:flex justify-between items-center py-1 border-b dark:border-gray-700 text-xs text-gray-500">
+                    <div>
+                        <a href="#home" onclick="showHome(); return false;" class="hover:text-primary mr-3">Beranda Utama</a>
+                        <a href="#wirausaha" onclick="openArticle('headline-main'); return false;" class="hover:text-primary mr-3">Proyek Wirausaha</a>
+                        <a href="#kemitraan" onclick="openArticle('feed-1'); return false;" class="hover:text-primary">Hexa-Helix</a>
+                    </div>
+                    <div id="current-datetime"></div>
+                </div>
+                <!-- Main Header -->
+                <div class="flex justify-between items-center py-4">
+                    <div class="flex items-center">
+                        <button class="md:hidden p-2 -ml-2 mr-2" id="mobile-menu-button">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                        </button>
+                        <a href="#" onclick="showHome(); return false;" class="text-3xl font-black text-primary cursor-pointer">
+                           BERITA ANGIN
+                        </a>
+                    </div>
+                    <div class="hidden md:block text-center">
+                        <span class="text-lg font-bold text-secondary dark:text-white">1% Issue 99%Fakta</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="relative hidden lg:block">
+                            <input type="text" id="desktop-search" placeholder="Cari topik wirausaha..." class="border rounded-full py-2 px-4 w-52 bg-gray-100 dark:bg-gray-800 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                            <svg class="w-5 h-5 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                        <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                           <svg id="theme-icon-light" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                           <svg id="theme-icon-dark" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+                <!-- Navigation -->
+                <nav id="main-nav" class="hidden md:flex justify-center items-center space-x-6 py-2 text-sm font-bold border-t dark:border-gray-700">
+                    <a href="#" onclick="showHome(); return false;" data-category="HOME" class="nav-link text-primary border-b-2 border-primary pb-1 transition">UTAMA</a>
+                    <a href="#" onclick="openArticle('headline-main'); return false;" class="nav-link text-secondary dark:text-dark-text-secondary hover:text-primary transition pb-1">PROYEK WIRAUSAHA</a>
+                    <a href="#" onclick="openArticle('feed-1'); return false;" class="nav-link text-secondary dark:text-dark-text-secondary hover:text-primary transition pb-1">KEMITRAAN STRATEGIS</a>
+                    <a href="#" onclick="openArticle('side-1'); return false;" class="nav-link text-secondary dark:text-dark-text-secondary hover:text-primary transition pb-1">DIGITALISASI & AI</a>
+                    <a href="#" onclick="openArticle('side-2'); return false;" class="nav-link text-secondary dark:text-dark-text-secondary hover:text-primary transition pb-1">GREEN BUSINESS</a>
+                    <a href="#" onclick="openArticle('side-4'); return false;" class="nav-link text-secondary dark:text-dark-text-secondary hover:text-primary transition pb-1">PENDANAAN</a>
+                </nav>
+            </div>
+             <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden">
+                 <div class="px-4 py-2 border-t dark:border-gray-700">
+                    <input type="text" id="mobile-search" placeholder="Cari topik..." class="border rounded-full py-2 px-4 w-full bg-gray-100 dark:bg-gray-800 dark:border-gray-600 mb-2">
+                 </div>
+                 <nav class="flex flex-col text-center" id="mobile-nav-list">
+                    <a href="#" onclick="showHome(); toggleMobileMenu(); return false;" class="py-3 font-bold text-primary bg-gray-100 dark:bg-gray-800">UTAMA</a>
+                    <a href="#" onclick="openArticle('headline-main'); toggleMobileMenu(); return false;" class="py-3 font-bold text-gray-700 dark:text-dark-text-secondary border-t dark:border-gray-700">PROYEK WIRAUSAHA</a>
+                    <a href="#" onclick="openArticle('feed-1'); toggleMobileMenu(); return false;" class="py-3 font-bold text-gray-700 dark:text-dark-text-secondary border-t dark:border-gray-700">KEMITRAAN STRATEGIS</a>
+                    <a href="#" onclick="openArticle('side-1'); toggleMobileMenu(); return false;" class="py-3 font-bold text-gray-700 dark:text-dark-text-secondary border-t dark:border-gray-700">DIGITALISASI & AI</a>
+                    <a href="#" onclick="openArticle('side-2'); toggleMobileMenu(); return false;" class="py-3 font-bold text-gray-700 dark:text-dark-text-secondary border-t dark:border-gray-700">GREEN BUSINESS</a>
+                    <a href="#" onclick="openArticle('side-4'); toggleMobileMenu(); return false;" class="py-3 font-bold text-gray-700 dark:text-dark-text-secondary border-t dark:border-gray-700">PENDANAAN</a>
+                 </nav>
+            </div>
+        </header>
+        <div class="placeholder-for-sticky" style="height: 140px;"></div>
+
+        <!-- VIEW 1: HOME PAGE -->
+        <div id="home-page" class="page-view active">
+            <main class="container mx-auto p-4 bg-white dark:bg-dark-surface shadow-lg">
+                 <!-- Notification Banner -->
+                <div id="content-header-banner" class="mb-6 hidden bg-primary/10 border-l-4 border-primary p-4 rounded-r-lg flex justify-between items-center">
+                    <span id="banner-text" class="font-bold text-primary">Hasil pencarian topik</span>
+                    <button onclick="resetSearchBanner()" class="text-xs font-bold uppercase underline hover:text-primary">Tutup</button>
+                </div>
+
+                 <!-- Headline Section: 1 large + 4 small -->
+                <section id="headline-section" class="mb-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Main Headline -->
+                        <div class="relative rounded-lg overflow-hidden group cursor-pointer" onclick="openArticle('headline-main')">
+                            <div class="overflow-hidden rounded-lg">
+                                <img src="1111.gif" alt="Fokus Pembangunan Proyek Wirausaha" class="w-full h-full object-cover transition-transform duration-300 group-hover-image">
+                            </div>
+                            <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 via-black/70 to-transparent">
+                                <span class="text-xs font-bold bg-primary text-white px-2.5 py-1 rounded">FOKUS UTAMA</span>
+                                <h1 class="text-xl md:text-2xl font-bold text-white mt-2 leading-tight">"1% Issue 99% Fakta" adalah sebuah ungkapan atau pola pikir yang berarti masalah kecil (1%) sering kali dibesar-besarkan, padahal ada banyak sekali kebenaran atau kenyataan yang solid (99%) di baliknya.</h1>
+                                <p class="text-xs md:text-sm text-gray-200 mt-2 line-clamp-2">Pembangunan proyek wirausaha diarahkan secara komprehensif untuk melahirkan ekosistem bisnis mandiri yang adaptif terhadap disrupsi teknologi serta berorientasi pada daya saing global...</p>
+                                <div class="mt-3 text-xs text-gray-300 flex items-center space-x-2">
+                                    <span>Oleh Tim Redaksi Ekonomi</span>
+                                    <span>&bull;</span>
+                                    <span>Laporan Khusus</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Side Headlines -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="group flex flex-col justify-between bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg border dark:border-gray-700 cursor-pointer" onclick="openArticle('side-1')">
+                                <div>
+                                    <div class="overflow-hidden rounded-lg mb-2"><img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=400&q=80" class="w-full h-32 object-cover group-hover-image transition-transform duration-300" alt="Digitalisasi"></div>
+                                    <span class="text-[10px] font-bold text-primary">DIGITALISASI & AI</span>
+                                    <h3 class="font-bold text-sm leading-snug article-title-hover mt-1">Integrasi AI dan Otomasi Dorong Efisiensi Operasional Wirausaha</h3>
+                                    <p class="text-xs text-gray-600 dark:text-dark-text-secondary mt-1">Pemanfaatan platform e-commerce dan kecerdasan buatan memperluas jangkauan pasar secara masif...</p>
+                                </div>
+                                <span class="text-[10px] text-gray-400 mt-2">Pilar Pertama</span>
+                            </div>
+                             <div class="group flex flex-col justify-between bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg border dark:border-gray-700 cursor-pointer" onclick="openArticle('side-2')">
+                                <div>
+                                    <div class="overflow-hidden rounded-lg mb-2"><img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=400&q=80" class="w-full h-32 object-cover group-hover-image transition-transform duration-300" alt="Green Business"></div>
+                                    <span class="text-[10px] font-bold text-primary">GREEN BUSINESS</span>
+                                    <h3 class="font-bold text-sm leading-snug article-title-hover mt-1">Inovasi Produk Berkelanjutan dan Penerapan Ekonomi Sirkular</h3>
+                                    <p class="text-xs text-gray-600 dark:text-dark-text-secondary mt-1">Pengembangan produk ramah lingkungan guna memenuhi tren global dan mereduksi limbah produksi...</p>
+                                </div>
+                                <span class="text-[10px] text-gray-400 mt-2">Pilar Kedua</span>
+                            </div>
+                             <div class="group flex flex-col justify-between bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg border dark:border-gray-700 cursor-pointer" onclick="openArticle('side-3')">
+                                <div>
+                                    <div class="overflow-hidden rounded-lg mb-2"><img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=400&q=80" class="w-full h-32 object-cover group-hover-image transition-transform duration-300" alt="Upskilling SDM"></div>
+                                    <span class="text-[10px] font-bold text-primary">UPSKILLING SDM</span>
+                                    <h3 class="font-bold text-sm leading-snug article-title-hover mt-1">Pelatihan Manajemen Keuangan dan Mentorship Intensif Bisnis</h3>
+                                    <p class="text-xs text-gray-600 dark:text-dark-text-secondary mt-1">Akselerasi validasi ide bisnis ke tahap komersial melalui pembinaan kepemimpinan dan literasi digital...</p>
+                                </div>
+                                <span class="text-[10px] text-gray-400 mt-2">Pilar Ketiga</span>
+                            </div>
+                             <div class="group flex flex-col justify-between bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg border dark:border-gray-700 cursor-pointer" onclick="openArticle('side-4')">
+                                <div>
+                                    <div class="overflow-hidden rounded-lg mb-2"><img src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=400&q=80" class="w-full h-32 object-cover group-hover-image transition-transform duration-300" alt="Pendanaan"></div>
+                                    <span class="text-[10px] font-bold text-primary">AKSES PENDANAAN</span>
+                                    <h3 class="font-bold text-sm leading-snug article-title-hover mt-1">Membuka Jalur Modal Ventura, Angel Investors, & Crowdfunding</h3>
+                                    <p class="text-xs text-gray-600 dark:text-dark-text-secondary mt-1">Fasilitasi pembiayaan mikro yang ramah dan fleksibel bagi wirausaha pemula merintis usaha...</p>
+                                </div>
+                                <span class="text-[10px] text-gray-400 mt-2">Pilar Keempat</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <div class="grid grid-cols-12 gap-8">
+                    <!-- Main Feed -->
+                    <div class="col-span-12 lg:col-span-8">
+                        <section class="mb-8">
+                            <h2 class="kompas-header">KEMITRAAN STRATEGIS (HEXA-HELIX)</h2>
+                            <ul id="terkini-list" class="space-y-4">
+                               <li class="flex items-start space-x-4 pb-4 border-b dark:border-gray-700 group cursor-pointer" onclick="openArticle('feed-1')">
+                                    <div class="w-40 h-24 overflow-hidden rounded-md flex-shrink-0"><img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=200&q=80" class="w-full h-full object-cover group-hover-image transition-transform duration-300" alt="Sinergi Multipihak"></div>
+                                    <div>
+                                        <span class="text-xs font-bold text-gray-500">AKSELERATOR PERTUMBUHAN</span>
+                                        <h3 class="text-xl font-bold mt-1 article-title-hover">Sinergi Multipihak Melalui Model Kemitraan Hexa-Helix</h3>
+                                        <p class="text-sm text-gray-600 dark:text-dark-text-secondary mt-1">Wirausaha tidak bisa berdiri sendiri; kolaborasi erat antara Pemerintah, Korporasi Swasta, Akademisi, Komunitas, dan Media menjadi kunci stabilitas...</p>
+                                        <p class="text-xs text-gray-500 mt-2">Pilar Utama Kemitraan</p>
+                                    </div>
+                                </li>
+                                 <li class="flex items-start space-x-4 pb-4 border-b dark:border-gray-700 group cursor-pointer" onclick="openArticle('feed-2')">
+                                    <div class="w-40 h-24 overflow-hidden rounded-md flex-shrink-0"><img src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=200&q=80" class="w-full h-full object-cover group-hover-image transition-transform duration-300" alt="Akses Pasar Bersama"></div>
+                                    <div>
+                                        <span class="text-xs font-bold text-gray-500">JOINT MARKET ACCESS</span>
+                                        <h3 class="text-xl font-bold mt-1 article-title-hover">Akses Pasar Bersama dan Kolaborasi Volume Ekspor Besar</h3>
+                                        <p class="text-sm text-gray-600 dark:text-dark-text-secondary mt-1">Kolaborasi antar-wirausaha untuk memenuhi volume permintaan pasar ekspor global serta partisipasi aktif dalam pameran dagang internasional...</p>
+                                        <p class="text-xs text-gray-500 mt-2">Strategi Perluasan Pasar</p>
+                                    </div>
+                                </li>
+                                 <li class="flex items-start space-x-4 pb-4 border-b dark:border-gray-700 group cursor-pointer" onclick="openArticle('feed-3')">
+                                    <div class="w-40 h-24 overflow-hidden rounded-md flex-shrink-0"><img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=200&q=80" class="w-full h-full object-cover group-hover-image transition-transform duration-300" alt="Transfer Teknologi"></div>
+                                    <div>
+                                        <span class="text-xs font-bold text-gray-500">TRANSFER PENGETAHUAN</span>
+                                        <h3 class="text-xl font-bold mt-1 article-title-hover">Adopsi Standar Mutu Industri: Sertifikasi ISO, Halal, & BPOM</h3>
+                                        <p class="text-sm text-gray-600 dark:text-dark-text-secondary mt-1">Mitra korporasi besar mendampingi wirausaha kecil dalam penerapan manajemen risiko bisnis serta standarisasi mutu produk berstandar tinggi...</p>
+                                        <p class="text-xs text-gray-500 mt-2">Penguatan Mutu</p>
+                                    </div>
+                                </li>
+                            </ul>
+                            <button onclick="loadMoreArticles()" id="load-more-btn" class="w-full mt-4 py-2 text-center font-bold text-primary border-2 border-primary rounded-lg hover:bg-primary hover:text-white transition">LIHAT ANALISIS LENGKAP</button> 
+                        </section>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <aside class="col-span-12 lg:col-span-4">
+                         <div class="sticky top-32 space-y-8">
+                            <!-- Terpopuler -->
+                            <div class="bg-white dark:bg-dark-surface rounded-lg shadow-md">
+                                <h3 class="terpopuler-header">SOROTAN UTAMA</h3>
+                                <ol class="p-4 space-y-4">
+                                    <li class="flex items-start group terpopuler-item cursor-pointer" onclick="openArticle('pop-1')">
+                                        <span class="text-5xl font-black number mr-4">1</span>
+                                        <h4 class="font-bold leading-tight article-title-hover group-hover:text-primary transition pt-2">Peran Pemerintah & CSR Korporasi dalam Rantai Pasok Global</h4>
+                                    </li>
+                                     <li class="flex items-start group terpopuler-item border-t dark:border-gray-700 pt-4 cursor-pointer" onclick="openArticle('pop-2')">
+                                        <span class="text-5xl font-black number mr-4">2</span>
+                                        <h4 class="font-bold leading-tight article-title-hover group-hover:text-primary transition pt-2">Hilirisasi Riset Akademisi untuk Industri Wirausaha Lokal</h4>
+                                    </li>
+                                    <li class="flex items-start group terpopuler-item border-t dark:border-gray-700 pt-4 cursor-pointer" onclick="openArticle('pop-3')">
+                                        <span class="text-5xl font-black number mr-4">3</span>
+                                        <h4 class="font-bold leading-tight article-title-hover group-hover:text-primary transition pt-2">Strategi Crowdfunding & Modal Ventura untuk Startup Pemula</h4>
+                                    </li>
+                                </ol>
+                            </div>
+                            
+                            <!-- Info Program -->
+                            <div class="bg-gray-100 dark:bg-dark-surface p-4 rounded-lg text-center border dark:border-gray-700">
+                                <p class="text-xs text-gray-400 mb-2">INFO PROGRAM</p>
+                                <h4 class="font-bold text-sm text-primary mb-1">Inkubator Bisnis Hexa-Helix 2026</h4>
+                                <p class="text-xs text-gray-600 dark:text-dark-text-secondary mb-3">Daftarkan proyek wirausaha Anda untuk mendapatkan akses mentorship intensif dan pembiayaan modal.</p>
+                                <a href="#" onclick="alert('Membuka formulir pendaftaran program inkubator wirausaha.'); return false;" class="inline-block px-4 py-2 bg-primary text-white text-xs font-bold rounded hover:bg-primary/90 transition">Daftar Sekarang</a>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </main>
+        </div>
+
+        <!-- VIEW 2: DEDICATED ARTICLE PAGE (Halaman Khusus Artikel) -->
+        <div id="article-page" class="page-view">
+            <main class="container mx-auto p-4 max-w-4xl bg-white dark:bg-dark-surface shadow-lg my-6 rounded-xl">
+                <!-- Tombol Kembali -->
+                <div class="mb-6">
+                    <button onclick="showHome()" class="flex items-center space-x-2 text-primary font-bold hover:underline">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        <span>Kembali ke Beranda</span>
+                    </button>
+                </div>
+
+                <!-- Konten Halaman Artikel -->
+                <article class="space-y-6">
+                    <div>
+                        <span id="page-article-category" class="text-xs font-bold bg-primary text-white px-3 py-1.5 rounded uppercase tracking-wider">KATEGORI</span>
+                        <h1 id="page-article-title" class="text-3xl md:text-4xl font-black mt-3 leading-tight text-secondary dark:text-white">Judul Artikel Lengkap</h1>
+                        <div class="text-xs text-gray-500 flex items-center space-x-3 mt-3 border-b dark:border-gray-700 pb-4">
+                            <span id="page-article-author">Oleh Tim Redaksi</span>
+                            <span>&bull;</span>
+                            <span id="page-article-time">Waktu Terbit</span>
+                        </div>
+                    </div>
+
+                    <div class="rounded-xl overflow-hidden shadow-md">
+                        <img id="page-article-image" src="" alt="Ilustrasi Artikel" class="w-full h-72 md:h-96 object-cover">
+                    </div>
+
+                    <div id="page-article-content" class="text-base md:text-lg text-gray-700 dark:text-dark-text leading-relaxed space-y-4">
+                        <!-- Teks artikel dimuat via JS -->
+                    </div>
+
+                    <!-- Tombol Navigasi Bawah Artikel -->
+                    <div class="border-t dark:border-gray-700 pt-6 mt-8 flex justify-between items-center">
+                        <button onclick="showHome()" class="px-5 py-2.5 bg-gray-200 dark:bg-gray-700 text-secondary dark:text-dark-text rounded-lg font-bold hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                            &larr; Kembali ke Beranda
+                        </button>
+                        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="px-5 py-2.5 bg-primary text-white rounded-lg font-bold hover:bg-primary/90 transition">
+                            Ke Atas &uarr;
+                        </button>
+                    </div>
+                </article>
+            </main>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="bg-white dark:bg-dark-surface mt-8 border-t-4 border-primary">
+            <div class="container mx-auto px-8 py-12">
+                <div class="flex justify-between items-center mb-8 pb-8 border-b dark:border-gray-700">
+                    <div>
+                        <a href="#" onclick="showHome(); return false;" class="text-4xl font-black text-primary cursor-pointer">BERITA ANGIN</a>
+                        <p class="text-sm text-gray-500">1% ISSUE 99% FAKTA</p>
+                    </div>
+                     <div class="flex space-x-4">
+                        <a href="#" onclick="alert('Membuka tautan Sosial Media Facebook'); return false;" class="text-gray-500 hover:text-primary"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd" /></svg></a>
+                        <a href="#" onclick="alert('Membuka tautan Sosial Media Twitter/X'); return false;" class="text-gray-500 hover:text-primary"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.71v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" /></svg></a>
+                        <a href="#" onclick="alert('Membuka tautan Sosial Media Instagram'); return false;" class="text-gray-500 hover:text-primary"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.024.06 1.378.06 3.808s-.012 2.784-.06 3.808c-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.024.048-1.378.06-3.808.06s-2.784-.013-3.808-.06c-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.048-1.024-.06-1.378-.06-3.808s.012-2.784.06-3.808c.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 016.345 2.525c.636-.247 1.363-.416 2.427-.465C9.793 2.013 10.147 2 12.315 2zm-1.161 10.552a3.249 3.249 0 11-6.498 0 3.249 3.249 0 016.498 0zM15.75 6.312a1.125 1.125 0 11-2.25 0 1.125 1.125 0 012.25 0 z" clip-rule="evenodd" /></svg></a>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-sm text-gray-700 dark:text-gray-300">
+                    <div class="font-bold space-y-3">
+                        <a href="#" onclick="openArticle('headline-main'); return false;" class="block hover:text-primary">Proyek Wirausaha</a>
+                        <a href="#" onclick="openArticle('side-1'); return false;" class="block hover:text-primary">Digitalisasi & AI</a>
+                        <a href="#" onclick="openArticle('side-2'); return false;" class="block hover:text-primary">Green Business</a>
+                    </div>
+                    <div class="font-bold space-y-3">
+                        <a href="#" onclick="openArticle('feed-1'); return false;" class="block hover:text-primary">Kemitraan Hexa-Helix</a>
+                        <a href="#" onclick="openArticle('side-4'); return false;" class="block hover:text-primary">Akses Pendanaan</a>
+                        <a href="#" onclick="openArticle('side-3'); return false;" class="block hover:text-primary">Upskilling SDM</a>
+                    </div>
+                     <div class="font-bold space-y-3">
+                        <a href="#" onclick="alert('Halaman Redaksi Bisnis'); return false;" class="block hover:text-primary">Redaksi Bisnis</a>
+                        <a href="#" onclick="alert('Layanan Kontak Kemitraan'); return false;" class="block hover:text-primary">Kontak & Kerjasama</a>
+                        <a href="#" onclick="alert('Kebijakan Privasi'); return false;" class="block hover:text-primary">Kebijakan Privasi</a>
+                    </div>
+                     <div class="text-xs text-gray-500">
+                        <h5 class="font-bold text-base text-gray-800 dark:text-gray-100 mb-3">TENTANG BERITA ANGIN</h5>
+                        <p class="leading-relaxed">Media independen yang berfokus pada perkembangan ekosistem wirausaha modern, transformasi digital, dan strategi kemitraan strategis berstandar global.</p>
+                    </div>
+                </div>
+                <div class="mt-12 border-t dark:border-gray-700 pt-8 text-center text-sm text-gray-500">
+                    <p>&copy; 2026 Beita Angin. Hak Cipta Dilindungi Undang-Undang.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Database artikel lengkap sesuai data Fokus Proyek Wirausaha & Kemitraan Strategis
+        const articlesData = {
+            'headline-main': {
+                category: 'FOKUS UTAMA',
+                title: '"1% Issue 99% Fakta"',
+                author: 'Oleh Tim Redaksi Berita Harian',
+                time: 'Laporan Khusus',
+                image: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=800&q=80',
+                content: `
+                  <p> Di era kelimpahan informasi dan dominasi media sosial saat ini, kita diterpa oleh ribuan narasi setiap harinya. Sayangnya, informasi yang paling cepat menyebar dan berpotensi viral bukanlah data analitis yang akurat, melainkan drama, isu sensasional, dan potongan narasi yang dirancang khusus untuk memicu respons emosional. Fenomena ini menciptakan distorsi kognitif massal di mana opini publik lebih sering dibentuk oleh persepsi ketimbang realitas objektif. Konsep 1% Isu dan 99% Fakta hadir sebagai kerangka berpikir kritis untuk mengajarkan kita agar tidak mudah terkecoh oleh berita bombastis dan selalu mengedepankan pembuktian berbasis data konkret.</p>
+
+<h2>Anatomi Informasi: Menembus Kebisingan 1% Isu vs 99% Fakta</h2>
+<p>Ketika sebuah kabar burung atau rumor beredar di ruang publik, perhatian jutaan orang bisa seketika tersedot ke arah narasi tersebut. Jika dibedah secara analitis, struktur dari fenomena informasi ini terbagi menjadi dua bagian yang sangat tidak seimbang:</p>
+
+<p><b>a. 1% Isu (Sensasionalisme):</b> Ini adalah elemen terkecil dari sebuah informasi, yang umumnya dikemas dalam bentuk judul berita umpan klik (<i>clickbait</i>), potongan klip audio-video tanpa konteks utuh, potongan kutipan yang dipelintir, atau gosip sensasional. Sifatnya sengaja dirancang menonjol, provokatif, dan manipulatif guna memancing kemarahan, rasa takut, atau rasa penasaran yang berlebihan.</p>
+
+<p><b>b. 99% Fakta (Realitas Objektif):</b> Ini adalah keseluruhan konteks, data mentah yang valid, dokumen resmi, kebenaran ilmiah, serta kronologi utuh yang sebenarnya tersedia di balik layar. Meskipun bagian ini mencakup mayoritas kebenaran dari suatu peristiwa, 99% fakta ini sering kali tenggelam dan diabaikan oleh masyarakat luas hanya karena dianggap terlalu panjang, rumit, atau kurang menghibur.</p>
+
+<h2>Mengapa Otak Manusia Mudah Terjebak dalam Pusaran Isu?</h2>
+<p>Untuk memahami mengapa rumor kecil dapat mengalahkan fakta besar, kita harus meneliti mekanisme psikologi media dan perilaku konsumen informasi. Ada beberapa alasan utama mengapa isu sensasional lebih mudah memikat perhatian publik:</p>
+<ul>
+  <li><b>Eksploitasi <i>Negativity Bias</i>:</b> Otak manusia memiliki kecenderungan alami untuk bereaksi lebih cepat terhadap ancaman atau kabar buruk. Pembuat konten sensasional memanfaatkan celah psikologis ini untuk mendapatkan traksi emosional secara instan.</li>
+  <li><b>Ekonomi Perhatian (<i>Attention Economy</i>):</b> Di dunia digital, perhatian manusia adalah komoditas berharga. Pihak-pihak tertentu sengaja membesarkan isu 1% demi mendongkrak trafik, jam tayang, interaksi (<i>engagement</i>), hingga keuntungan finansial atau politik.</li>
+  <li><b>Kemaslahatan Kognitif (<i>Cognitive Laziness</i>):</b> Membaca laporan fakta setebal puluhan halaman membutuhkan energi otak dan waktu. Sebaliknya, menyerap 1% isu melalui judul berita singkat jauh lebih mudah dan memuaskan dorongan emosional instan.</li>
+</ul>
+
+<h2>Dampak Buruk dari Dominasi Isu atas Fakta</h2>
+<p>Ketiadaan budaya verifikasi dan kebiasaan menelan 1% isu secara mentah-mentah membawa dampak buruk yang nyata bagi kehidupan bermasyarakat. Fenomena ini memicu pembentukan opini publik yang sesat, polarisasi sosial yang tajam, hingga penghakiman sepihak (<i>trial by press</i>) terhadap individu atau lembaga tertentu. Lebih jauh lagi, keputusan-keputusan penting dalam bisnis maupun kebijakan publik berisiko salah arah jika diambil berdasarkan kepanikan atas isu yang sebenarnya tidak memiliki bobot fakta yang kuat.</p>
+
+<h2>Panduan Komprehensif: Cara Menyikapi Informasi Secara Bijak</h2>
+<p>Agar kita tidak menjadi korban manipulasi informasi dan mampu berpikir jernih di tengah riuk-pikuk media, berikut adalah panduan praktis dan terstruktur untuk menyaring setiap informasi yang kita terima:</p>
+
+<p><b>1. Tahan Diri dan Lakukan Pause Emosional:</b> Ketika menerima berita yang memicu amarah, ketakutan, atau euforia berlebihan, tahan diri Anda untuk tidak langsung membagikannya (<i>share</i>). Sadarilah bahwa emosi yang terangsang secara mendadak adalah indikator utama bahwa informasi tersebut kemungkinan besar dirancang secara manipulatif.</p>
+
+<p><b>2. Cari Bukti Utama dan Lakukan Verifikasi Silang:</b> Jangan pernah puas hanya dengan membaca judul atau ringkasan media sosial. Luangkan waktu untuk menggali data yang lebih lengkap, memeriksa kredibilitas sumber utama, dan membaca laporan berimbang dari lembaga riset atau media yang memiliki standar jurnalistik tinggi.</p>
+
+<p><b>3. Fokus pada Substansi dan Bobot Data:</b> Bandingkan seberapa besar porsi narasi emosional atau opini pribadi dalam berita tersebut jika dibandingkan dengan data konkret, statistik resmi, atau bukti fisik yang disajikan. Jika sebuah berita 90% berisi kalimat provokatif dan hanya 10% memuat data mentah, maka berita tersebut patut dipertanyakan validitasnya.</p>
+
+<h2>Refleksi Akhir: Menjadi Konsumen Informasi yang Cerdas</h2>
+<p>Memahami dan menerapkan prinsip 1% Isu vs 99% Fakta adalah bentuk literasi digital yang wajib dimiliki setiap individu di era modern. Dengan melatih ketelitian berpikir, mengendalikan emosi sebelum merespons, dan selalu menuntut pembuktian objektif, kita dapat melindungi diri dari penyesatan informasi. Pada akhirnya, kemampuan untuk menembus kebisingan isu dan fokus pada fakta adalah kunci utama menuju masyarakat yang cerdas, rasional, dan tidak mudah diadu domba.</p>
+
+                `
+            },
+            'side-1': {
+                category: 'DIGITALISASI & TEKNOLOGI',
+                title: 'Integrasi AI dan Otomasi Dorong Efisiensi Operasional Wirausaha',
+                author: 'Oleh Rubrik Teknologi Bisnis',
+                time: 'Pilar Pertama',
+                image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
+                content: `
+                    <p><strong>Digitalisasi dan adopsi teknologi</strong> menjadi fondasi mutlak dalam pengelolaan unit bisnis modern. Integrasi kecerdasan buatan (AI) dan sistem otomatisasi terbukti mampu mendongkrak efisiensi operasional harian secara signifikan, memangkas biaya produksi, serta meminimalkan human error.</p>
+                    <p>Selain itu, pemanfaatan platform e-commerce dan strategi pemasaran digital secara masif memungkinkan wirausaha memperluas jangkauan pasar melampaui batas geografis lokal, menembus pasar nasional hingga kancah global.</p>
+                    
+                    
+                    
+                    
+                    
+                `
+            },
+            'side-2': {
+                category: 'GREEN BUSINESS',
+                title: 'Inovasi Produk Berkelanjutan dan Penerapan Prinsip Ekonomi Sirkular',
+                author: 'Oleh Rubrik Lingkungan & Industri',
+                time: 'Pilar Kedua',
+                image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80',
+                content: `
+                    <p><strong>Inovasi produk berkelanjutan (Green Business)</strong> kini menjadi daya tawar utama di pasar internasional. Pengembangan produk ramah lingkungan tidak hanya menjawab tren pasar global yang semakin peduli isu iklim, tetapi juga menciptakan nilai tambah produk yang tinggi.</p>
+                    <p>Penerapan prinsip ekonomi sirkular (circular economy) diterapkan guna mengurangi limbah produksi, mengoptimalkan daur ulang material, serta mewujudkan operasional bisnis yang efisien sekaligus ramah lingkungan.</p>
+                `
+            },
+            'side-3': {
+                category: 'UPSKILLING SDM',
+                title: 'Pelatihan Manajemen Keuangan dan Mentorship Intensif Bisnis',
+                author: 'Oleh Rubrik Pengembangan SDM',
+                time: 'Pilar Ketiga',
+                image: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80',
+                content: `
+                    <p><strong>Peningkatan kapasitas SDM (Upskilling)</strong> difokuskan pada penguasaan manajemen keuangan, literasi digital, dan kepemimpinan yang adaptif bagi para pelaku usaha.</p>
+                    <p>Program mentorship intensif dari para pakar industri dihadirkan untuk mempercepat proses validasi ide bisnis, menguji model bisnis, hingga mengantarkan rintisan usaha ke tahap komersial dengan risiko kegagalan yang minim.</p>
+                `
+            },
+            'side-4': {
+                category: 'AKSES PENDANAAN',
+                title: 'Membuka Jalur Modal Ventura, Angel Investors, & Crowdfunding',
+                author: 'Oleh Rubrik Finansial',
+                time: 'Pilar Keempat',
+                image: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=800&q=80',
+                content: `
+                    <p><strong>Akses pendanaan yang fleksibel</strong> merupakan katalisator pertumbuhan bisnis. Proyek wirausaha difasilitasi untuk membuka jalur langsung ke modal ventura (venture capital), angel investors, maupun skema urun dana (crowdfunding).</p>
+                    <p>Selain itu, fasilitasi pembiayaan mikro yang ramah dan mudah diakses turut disiapkan khusus untuk mendukung wirausaha pemula dalam membangun fondasi modal usaha mereka.</p>
+                `
+            },
+            'feed-1': {
+                category: 'KEMITRAAN HEXA-HELIX',
+                title: 'Sinergi Multipihak Melalui Model Kemitraan Hexa-Helix',
+                author: 'Oleh Tim Analis Strategis',
+                time: 'Pilar Utama Kemitraan',
+                image: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=800&q=80',
+                content: `
+                    <p><strong>Kemajuan bermitra (Kemitraan Strategis)</strong> berfungsi sebagai akselerator pertumbuhan yang vital. Wirausaha tidak bisa berdiri sendiri; mereka membutuhkan sinergi lintas sektor untuk tumbuh lebih cepat dan stabil.</p>
+                    <p>Model <strong>Sinergi Multipihak (Kemitraan Hexa-Helix)</strong> melibatkan enam elemen kunci:</p>
+                    <ul class="list-disc pl-6 space-y-2 my-3">
+                        <li><strong>Pemerintah:</strong> Penyusunan regulasi yang adaptif, pemberian insentif pajak, dan kemudahan perizinan berusaha.</li>
+                        <li><strong>Swasta/Korporasi:</strong> Program Corporate Social Responsibility (CSR) yang inklusif dan integrasi UMKM ke dalam rantai pasok (supply chain) perusahaan besar.</li>
+                        <li><strong>Akademisi:</strong> Hilirisasi riset kampus untuk diaplikasikan langsung dalam industri wirausaha.</li>
+                        <li><strong>Komunitas & Media:</strong> Inkubator bisnis lokal dan publikasi luas untuk membangun kesadaran merek (brand awareness).</li>
+                    </ul>
+                `
+            },
+            'feed-2': {
+                category: 'JOINT MARKET ACCESS',
+                title: 'Akses Pasar Bersama dan Kolaborasi Volume Ekspor Besar',
+                author: 'Oleh Rubrik Pasar Global',
+                time: 'Strategi Perluasan Pasar',
+                image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=800&q=80',
+                content: `
+                    <p><strong>Akses Pasar Bersama (Joint Market Access)</strong> memberikan solusi bagi wirausaha skala kecil untuk melakukan kolaborasi kolektif guna memenuhi volume permintaan pasar ekspor yang besar yang sebelumnya sulit dijangkau secara mandiri.</p>
+                    <p>Partisipasi bersama dalam pameran dagang nasional maupun internasional menjadi agenda rutin untuk mempertemukan wirausaha lokal dengan buyer potensial dari seluruh dunia.</p>
+                `
+            },
+            'feed-3': {
+                category: 'TRANSFER TEKNOLOGI',
+                title: 'Adopsi Standar Mutu Industri: Sertifikasi ISO, Halal, & BPOM',
+                author: 'Oleh Rubrik Standarisasi Mutu',
+                time: 'Penguatan Mutu',
+                image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80',
+                content: `
+                    <p><strong>Transfer teknologi dan pengetahuan</strong> merupakan wujud nyata kepedulian mitra besar dalam membantu wirausaha kecil mengadopsi standar mutu industri berkelas tinggi, seperti kepemilikan sertifikasi ISO, Halal, maupun izin BPOM.</p>
+                    <p>Selain itu, pembagian best practices dalam manajemen pengelolaan risiko bisnis menjadi pelajaran berharga agar wirausaha mampu mengantisipasi gejolak pasar dengan matang.</p>
+                `
+            },
+            'pop-1': {
+                category: 'KORPORASI & PEMERINTAH',
+                title: 'Peran Pemerintah & CSR Korporasi dalam Rantai Pasok Global',
+                author: 'Oleh Redaksi Utama',
+                time: 'Sorotan 1',
+                image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80',
+                content: `
+                    <p>Integrasi UMKM ke dalam rantai pasok (supply chain) korporasi besar melalui program CSR yang tepat sasaran memberikan jaminan keberlanjutan bisnis jangka panjang bagi wirausaha lokal di era persaingan global.</p>
+                `
+            },
+            'pop-2': {
+                category: 'AKADEMISI & RISET',
+                title: 'Hilirisasi Riset Akademisi untuk Industri Wirausaha Lokal',
+                author: 'Oleh Rubrik Riset',
+                time: 'Sorotan 2',
+                image: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=800&q=80',
+                content: `
+                    <p>Transformasi hasil riset perguruan tinggi agar siap diaplikasikan secara komersial oleh pelaku wirausaha muda guna menciptakan inovasi produk berbasis sains dan teknologi modern.</p>
+                `
+            },
+            'pop-3': {
+                category: 'PENDANAAN',
+                title: 'Strategi Crowdfunding & Modal Ventura untuk Startup Pemula',
+                author: 'Oleh Rubrik Finansial',
+                time: 'Sorotan 3',
+                image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=800&q=80',
+                content: `
+                    <p>Panduan lengkap bagi wirausaha dalam mempersiapkan pitch deck yang menarik untuk meyakinkan modal ventura dan platform crowdfunding dalam menggalang dana segar dan mempercepat skala bisnis.</p>
+                `
+            }
+        };
+
+        // Fungsi Berpindah ke Halaman Artikel Khusus
+        function openArticle(articleKey) {
+            const article = articlesData[articleKey];
+            if (!article) return;
+
+            // Isi data ke halaman artikel
+            document.getElementById('page-article-category').textContent = article.category;
+            document.getElementById('page-article-title').textContent = article.title;
+            document.getElementById('page-article-author').textContent = article.author;
+            document.getElementById('page-article-time').textContent = article.time;
+            document.getElementById('page-article-image').src = article.image;
+            document.getElementById('page-article-content').innerHTML = article.content;
+
+            // Sembunyikan beranda, tampilkan halaman artikel
+            document.getElementById('home-page').classList.remove('active');
+            document.getElementById('article-page').classList.add('active');
+
+            // Scroll ke atas halaman
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Fungsi Kembali ke Beranda
+        function showHome() {
+            document.getElementById('article-page').classList.remove('active');
+            document.getElementById('home-page').classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Fungsi Tombol "Lihat Analisis Lengkap"
+        function loadMoreArticles() {
+            const terkiniList = document.getElementById('terkini-list');
+            const newItems = document.createElement('li');
+            newItems.className = 'flex items-start space-x-4 pb-4 border-b dark:border-gray-700 group cursor-pointer';
+            newItems.setAttribute('onclick', "openArticle('side-1')");
+            newItems.innerHTML = `
+                <div class="w-40 h-24 overflow-hidden rounded-md flex-shrink-0"><img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=200&q=80" class="w-full h-full object-cover group-hover-image transition-transform duration-300" alt="Arsip"></div>
+                <div>
+                    <span class="text-xs font-bold text-gray-500">ARSIP STRATEGIS</span>
+                    <h3 class="text-xl font-bold mt-1 article-title-hover">Evaluasi Komprehensif Ekosistem Wirausaha Nasional</h3>
+                    <p class="text-sm text-gray-600 dark:text-dark-text-secondary mt-1">Laporan tahunan mengenai efektivitas inkubasi bisnis dan pertumbuhan kemitraan strategis lintas sektor...</p>
+                    <p class="text-xs text-gray-500 mt-2">Arsip Dokumen</p>
+                </div>
+            `;
+            terkiniList.appendChild(newItems);
+            document.getElementById('load-more-btn').textContent = "SEMUA LAPORAN TELAH DITAMPILKAN";
+            document.getElementById('load-more-btn').disabled = true;
+            document.getElementById('load-more-btn').classList.add('opacity-50', 'cursor-not-allowed');
+        }
+
+        // Pencarian (Search Bar Interaktif)
+        function handleSearch(query) {
+            if (!query.trim()) return;
+            showHome();
+            const banner = document.getElementById('content-header-banner');
+            const bannerText = document.getElementById('banner-text');
+            banner.classList.remove('hidden');
+            bannerText.textContent = `Hasil pencarian topik: "${query}"`;
+            window.scrollTo({ top: 200, behavior: 'smooth' });
+        }
+
+        function resetSearchBanner() {
+            document.getElementById('content-header-banner').classList.add('hidden');
+        }
+
+        document.getElementById('desktop-search').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleSearch(this.value);
+            }
+        });
+
+        document.getElementById('mobile-search').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleSearch(this.value);
+                toggleMobileMenu();
+            }
+        });
+
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        }
+
+        // Inisialisasi Tema & Jam Real-Time
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('theme-toggle');
+            const lightIcon = document.getElementById('theme-icon-light');
+            const darkIcon = document.getElementById('theme-icon-dark');
+            
+            if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                lightIcon.classList.add('hidden');
+                darkIcon.classList.remove('hidden');
+            } else {
+                document.documentElement.classList.remove('dark');
+                lightIcon.classList.remove('hidden');
+                darkIcon.classList.add('hidden');
+            }
+            
+            themeToggle.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                lightIcon.classList.toggle('hidden');
+                darkIcon.classList.toggle('hidden');
+                localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+            });
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            mobileMenuButton.addEventListener('click', toggleMobileMenu);
+            
+            const header = document.getElementById('main-header');
+            const placeholder = document.querySelector('.placeholder-for-sticky');
+            if (header && placeholder) {
+                const headerHeight = header.offsetHeight;
+                placeholder.style.height = `${headerHeight}px`;
+                window.onscroll = () => {
+                    header.classList.toggle('sticky', window.pageYOffset > 50);
+                };
+            }
+
+            function updateDateTime() {
+                const now = new Date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                document.getElementById('current-datetime').textContent = now.toLocaleDateString('id-ID', options) + ' WIB';
+            }
+            updateDateTime();
+            setInterval(updateDateTime, 60000);
+        });
+    </script>
+</body>
+</html>
