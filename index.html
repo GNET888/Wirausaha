@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BERITA ANGIN — Portal Khusus Badai, Cuaca, & Informasi Terkini</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        deepBlue: '#0F172A',
+                        brandBlue: '#2563EB',
+                        brightBlue: '#3B82F6',
+                        softBlueBg: '#F0F6FF',
+                        cardBlueBg: '#E0EEFF',
+                    },
+                    boxShadow: {
+                        '3d': '0 20px 40px -15px rgba(37, 99, 235, 0.15), 0 10px 20px -10px rgba(15, 23, 42, 0.1)',
+                        '3d-hover': '0 30px 60px -15px rgba(37, 99, 235, 0.25), 0 15px 30px -10px rgba(15, 23, 42, 0.15)',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-softBlueBg text-slate-700 font-sans antialiased flex flex-col min-h-screen selection:bg-brandBlue selection:text-white">
+    <!-- Top Bar: Info Terkini Angin & Waktu Real-Time -->
+    <div class="bg-deepBlue text-slate-200 text-xs py-2.5 px-4 shadow-inner">
+        <div class="container mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div class="flex items-center space-x-2">
+                <span class="inline-block w-2 h-2 rounded-full bg-brightBlue animate-ping"></span>
+                <span id="realtimeInfo" class="font-medium tracking-wide">DARURAT CUACA: Peringatan Dini Badai Angin Kencang & Anomali Atmosfer — Sabtu, 5 September 2026</span>
+            </div>
+            <div class="space-x-4 text-slate-400">
+                <a href="#" class="hover:text-white transition">Pusat Meteorologi</a>
+                <a href="#" class="hover:text-white transition">Evakuasi & Siaga</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Header / Navbar dengan Logo Ikon Angin Kustom -->
+    <header class="bg-white border-b border-blue-100 sticky top-0 z-50 shadow-sm">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="#" onclick="filterCategory('Semua'); return false;" class="flex items-center gap-3 group">
+                <!-- LOGO SVG BERITA ANGIN KUSTOM -->
+                <div class="w-10 h-10 rounded-2xl bg-cardBlueBg border border-blue-200 flex items-center justify-center shadow-md group-hover:scale-105 transition transform">
+                    <svg class="w-6 h-6 text-brandBlue animate-spin-slow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19 12H2"></path>
+                    </svg>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-xl font-black tracking-wider text-deepBlue leading-none">
+                        BERITA<span class="text-brandBlue">ANGIN</span>
+                    </span>
+                    <span class="text-[10px] font-bold text-slate-400 tracking-widest uppercase mt-1">Terpercaya dan Akurat</span>
+                </div>
+            </a>
+            
+            <!-- Menu Navigasi Atas Berfungsi Sebagai Filter Kategori -->
+            <nav class="hidden lg:flex items-center space-x-6 font-medium text-sm text-slate-600">
+                <a href="#" onclick="filterCategory('Semua'); return false;" id="nav-Semua" class="text-brandBlue font-bold transition">Beranda</a>
+                <a href="#" onclick="filterCategory('Badai & Siklon'); return false;" id="nav-Badai & Siklon" class="hover:text-brandBlue transition">Peristiwa</a>
+                <a href="#" onclick="filterCategory('Olahraga'); return false;" id="nav-Olahraga" class="hover:text-brandBlue transition">Olahraga</a>
+                <a href="#" onclick="filterCategory('Ekonomi'); return false;" id="nav-Ekonomi" class="hover:text-brandBlue transition">Ekonomi</a>
+                <a href="#" onclick="filterCategory('Technology'); return false;" id="nav-Technology" class="hover:text-brandBlue transition">Technology</a>
+                <a href="#" onclick="filterCategory('Trend'); return false;" id="nav-Trend" class="hover:text-brandBlue transition">Trend</a>
+                <a href="#" onclick="filterCategory('Market'); return false;" id="nav-Market" class="hover:text-brandBlue transition">Market</a>
+            </nav>
+            <!-- Kolom Pencarian -->
+            <div class="flex items-center">
+                <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Cari berita atau kategori..." class="bg-blue-50/60 text-sm px-4 py-2 rounded-2xl border border-blue-200 focus:outline-none focus:border-brandBlue focus:bg-white w-32 md:w-52 transition shadow-inner">
+            </div>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- VIEW 1: HOME (TAMPILAN UTAMA BERITA)        -->
+    <!-- ========================================== -->
+    <div id="homeView">
+        <!-- Hero Section Berita Utama dengan Card Biru & Foto -->
+        <section class="container mx-auto px-4 mt-8">
+            <div id="featuredContainer" class="bg-cardBlueBg rounded-3xl shadow-3d border border-blue-200 overflow-hidden transform transition hover:-translate-y-1 duration-300">
+                <!-- Dirender oleh JavaScript -->
+            </div>
+        </section>
+        <!-- Konten Utama -->
+        <main class="container mx-auto px-4 py-12 flex-grow">
+            <!-- Judul Section -->
+            <div id="kategori" class="flex flex-wrap items-center justify-between mb-8 gap-4 border-b border-blue-200 pb-4">
+                <h3 id="berita-section" class="text-2xl font-black text-deepBlue">Eksplorasi Berita & Kategori Terkini</h3>
+            </div>
+            <!-- Grid Berita Cards -->
+            <div id="newsContainer" class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                <!-- Dirender oleh JS -->
+            </div>
+            <!-- Section Artikel & Opini Pilihan -->
+            <div id="artikel-section" class="mb-8">
+                <h3 class="text-2xl font-black text-deepBlue mb-6 border-b border-blue-200 pb-4">Analisis Pakar & Laporan Khusus</h3>
+                <div id="articleContainer" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Dirender oleh JS -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIEW 2: HALAMAN DETAIL ARTIKEL             -->
+    <!-- ========================================== -->
+    <div id="detailView" class="hidden container mx-auto px-4 py-10 flex-grow max-w-4xl">
+        <button onclick="showHomeView()" class="inline-flex items-center text-sm font-bold text-brandBlue bg-cardBlueBg hover:bg-blue-200 px-5 py-2.5 rounded-2xl transition shadow-md border border-blue-200 mb-6 transform hover:-translate-x-1">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Kembali ke Beranda Utama
+        </button>
+        <article class="bg-cardBlueBg rounded-3xl shadow-3d border border-blue-200 overflow-hidden">
+            <div class="w-full h-72 md:h-96 overflow-hidden">
+                <img id="detailImage" src="" alt="Detail Foto" class="w-full h-full object-cover">
+            </div>
+            <div class="p-8 md:p-14">
+                <div class="flex items-center space-x-3 mb-6">
+                    <span id="detailCategory" class="text-xs font-bold uppercase tracking-wider bg-blue-200 text-deepBlue px-3.5 py-1.5 rounded-xl shadow-sm"></span>
+                    <span id="detailDate" class="text-xs font-medium text-slate-500"></span>
+                </div>
+                <h1 id="detailTitle" class="text-3xl md:text-4xl font-black text-deepBlue mb-6 leading-tight"></h1>
+                
+                <div id="detailAuthorBox" class="flex items-center space-x-4 p-5 bg-white/70 rounded-2xl mb-8 border border-blue-200 hidden">
+                    <div class="w-12 h-12 rounded-2xl bg-brandBlue text-white flex items-center justify-center font-bold text-lg shadow-md" id="authorInitial">A</div>
+                    <div>
+                        <h5 id="detailAuthorName" class="font-bold text-deepBlue text-sm"></h5>
+                        <p id="detailAuthorRole" class="text-xs text-slate-500"></p>
+                    </div>
+                </div>
+                <div id="detailBody" class="text-slate-700 space-y-6 leading-relaxed text-justify text-base md:text-lg font-normal">
+                    <!-- Dirender lewat JS -->
+                </div>
+                <div class="mt-12 pt-6 border-t border-blue-200 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <p class="text-xs text-slate-500 font-medium">© 2026 BERITA ANGIN Network. Hak Cipta Dilindungi.</p>
+                    <button onclick="showHomeView()" class="text-sm font-bold text-deepBlue hover:text-brandBlue transition">
+                        &larr; Lihat Berita Lainnya
+                    </button>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <!-- Footer Profesional -->
+    <footer class="bg-deepBlue text-slate-300 py-14 mt-auto border-t border-blue-900/50 shadow-2xl">
+        <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            <div>
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-8 h-8 rounded-xl bg-blue-600/30 border border-blue-500/30 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-brandBlue" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19 12H2"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-white text-lg font-black tracking-wider">BERITA<span class="text-brandBlue">ANGIN</span></h4>
+                </div>
+                <p class="text-sm leading-relaxed text-slate-400">Portal berita terintegrasi dengan rubrik Olahraga, Ekonomi, Teknologi, Trend, dan Market secara komprehensif.</p>
+            </div>
+            <div>
+                <h5 class="text-white font-bold mb-3 text-sm">Kategori Utama</h5>
+                <ul class="space-y-2 text-sm text-slate-400">
+                    <li><a href="#" onclick="filterCategory('Olahraga'); return false;" class="hover:text-white transition">Olahraga</a></li>
+                    <li><a href="#" onclick="filterCategory('Ekonomi'); return false;" class="hover:text-white transition">Ekonomi</a></li>
+                    <li><a href="#" onclick="filterCategory('Technology'); return false;" class="hover:text-white transition">Technology</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="text-white font-bold mb-3 text-sm">Rubrik Lainnya</h5>
+                <ul class="space-y-2 text-sm text-slate-400">
+                    <li><a href="#" onclick="filterCategory('Trend'); return false;" class="hover:text-white transition">Trend Gaya Hidup</a></li>
+                    <li><a href="#" onclick="filterCategory('Market'); return false;" class="hover:text-white transition">Market & Finansial</a></li>
+                    <li><a href="#" onclick="filterCategory('Badai & Siklon'); return false;" class="hover:text-white transition">Peringatan Dini Cuaca</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="text-white font-bold mb-3 text-sm">Buletin Berita</h5>
+                <p class="text-sm mb-3 text-slate-400">Dapatkan update informasi pilihan langsung ke perangkat Anda.</p>
+                <div class="flex shadow-lg rounded-2xl overflow-hidden border border-slate-700">
+                    <input type="email" placeholder="Email Anda..." class="bg-slate-900 text-white text-sm px-4 py-2.5 focus:outline-none w-full">
+                    <button class="bg-brandBlue text-white px-5 py-2.5 text-sm font-bold hover:bg-blue-600 transition">Gabung</button>
+                </div>
+            </div>
+        </div>
+        <div class="container mx-auto px-4 border-t border-slate-800/80 pt-6 text-center text-xs text-slate-500">
+            <p>&copy; Sabtu, 5 September 2026 Berita Angin Network. Seluruh Hak Cipta Dilindungi.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Data & Logika Artikel Lengkap -->
+    <script>
+        const database = {
+            featured: {
+                id: 301,
+                title: "Prakiraan Cuaca Indonesia Sepekan Periode 4 – 10 September 2026: Awal September Masih Berlangsung dengan Kondisi Panas dan Kering, Hujan Lokal Tetap Berpeluang Terjadi di Beberapa Wilayah",
+                category: "Kemarau & Hujan",
+                date: "Sabtu, 5 September 2026 • Update Utama",
+                image: "12.jpg",
+                snippet: "Awal September masih berlangsung dengan kondisi panas dan kering, sementara hujan lokal tetap berpeluang terjadi di beberapa wilayah berdasarkan pemantauan citra satelit polar pada 2 September 2026.",
+                content: "Awal September masih berlangsung dengan kondisi panas dan kering, hujan lokal tetap berpeluang terjadi di beberapa wilayah. Berdasarkan pemantauan citra satelit polar pada 2 September 2026, titik panas berkepercayaan tinggi masih ditemukan di sejumlah wilayah Indonesia. Kalimantan menjadi wilayah dengan jumlah titik panas terbanyak, yaitu 463 titik, diikuti Sumatra sebanyak 264 titik.<br><br>Kondisi ini perlu menjadi perhatian karena potensi kebakaran hutan dan lahan masih dapat terjadi, terutama di daerah dengan kondisi cuaca yang relatif kering. Asap dari kejadian kebakaran juga masih terpantau di beberapa wilayah dan berpotensi menyebar ke daerah sekitarnya mengikuti arah angin. Di tengah kondisi musim kemarau, tutupan awan yang relatif sedikit pada pagi hingga siang hari memungkinkan pemanasan permukaan berlangsung lebih optimal sehingga suhu udara dapat meningkat. Suhu udara maksimum tertinggi pada Dasarian III Agustus 2026 mencapai 37,9°C yang tercatat di Kabupaten Melawi, Kalimantan Barat. Sementara itu, pada periode 31 Agustus–2 September 2026, suhu di atas 37,0°C juga teramati di Aceh, Lampung, Kalimantan Barat, dan Kalimantan Timur.<br><br>Selain kondisi suhu yang relatif tinggi, sebagian wilayah Indonesia bagian selatan juga masih mengalami Hari Tanpa Hujan (HTH) dengan kategori panjang hingga ekstrem panjang. Durasi HTH terpanjang mencapai 121 hari yang tercatat di Kabupaten Bantul, Daerah Istimewa Yogyakarta. Kondisi musim kemarau yang masih berlangsung di sebagian besar wilayah Indonesia tidak sepenuhnya menghambat terjadinya hujan dengan intensitas tinggi di beberapa daerah. Pada periode 31 Agustus hingga 2 September 2026, hujan lebat hingga sangat lebat masih tercatat di wilayah Sumatra bagian utara dan tengah, dengan curah hujan tertinggi terjadi di Sumatera Utara sebesar 111,6 mm/hari, diikuti Sumatera Barat sebesar 101,8 mm/hari, dan Aceh sebesar 82,5 mm/hari.<br><br>Kondisi tersebut dipengaruhi oleh aktivitas spasial Madden-Julian Oscillation (MJO) dan Gelombang Rossby Ekuatorial yang terpantau di wilayah Aceh. Selain itu, Gelombang Kelvin juga terpantau aktif di wilayah Aceh, Sumatera Utara, dan Sumatera Barat, sedangkan Gelombang Mixed-Rossby-Gravity aktif di wilayah Aceh dan Sumatera Utara. Keberadaan daerah belokan dan pertemuan angin di ketiga provinsi tersebut juga mendukung peningkatan aktivitas pembentukan awan hujan. Suhu muka laut yang relatif hangat di perairan barat dan utara Sumatra turut berkontribusi dalam menyediakan pasokan uap air bagi proses pembentukan awan hujan di wilayah tersebut.<br><br><b>Dinamika Atmosfer Sepekan ke Depan</b><br>Pada periode Dasarian I hingga III September 2026, sebagian besar wilayah Indonesia diprakirakan masih mengalami kondisi relatif kering dengan curah hujan berada pada kategori rendah hingga menengah, yaitu berkisar antara 0–150 mm/dasarian. Wilayah dengan curah hujan kurang dari 50 mm/dasarian diprakirakan mendominasi Sumatra bagian selatan, Jawa, Bali, Nusa Tenggara, sebagian besar Kalimantan dan Sulawesi, Maluku, serta sebagian Papua. Kondisi tersebut mengindikasikan masih terbatasnya ketersediaan uap air di atmosfer, yang berkaitan dengan pengaruh El Nino kategori sangat kuat dan IOD positif.<br><br>Meskipun secara umum aktivitas pertumbuhan awan hujan di Indonesia diprakirakan masih rendah, beberapa wilayah tetap memiliki peluang pertumbuhan awan pada kategori sedang hingga tinggi. Pada 4–10 September 2026, MJO secara spasial diprakirakan aktif di sekitar pesisir utara Aceh, Maluku bagian timur, Laut Arafuru bagian tengah hingga timur, serta sebagian besar Papua. Sementara itu, Gelombang Kelvin diprakirakan aktif melintasi wilayah yang cukup luas, mulai dari Sumatra bagian tengah dan selatan, Jawa, Bali, Nusa Tenggara, Kalimantan, Sulawesi, Maluku, hingga Papua.<br><br><b>Imbauan Terkait Cuaca Ekstrem</b><br>Memasuki musim kemarau yang semakin mendominasi sejumlah wilayah Indonesia, masyarakat perlu mengantisipasi dampak cuaca panas dan kondisi udara yang lebih kering. BMKG mengimbau masyarakat untuk menggunakan pelindung atau tabir surya guna mengurangi paparan langsung sinar matahari serta menjaga kecukupan cairan tubuh. Masyarakat juga diminta untuk tidak membakar sampah atau membuka lahan secara sembarangan guna menghindari risiko kebakaran hutan dan lahan."
+            },
+            berita: [
+                {
+                    id: 1,
+                    title: "Strategi Timnas Hadapi Tantangan Cuaca Ekstrem di Laga Kandang",
+                    category: "Olahraga",
+                    date: "5 September 2026",
+                    image: "123.jpg",
+                    snippet: "Strategi tim nasional dalam menghadapi tantangan cuaca ekstrem pada laga kandang maupun tandang melibatkan adaptasi fisik, taktik, dan medis yang terukur.",
+                    content: "Strategi adaptasi dan penanganan cuaca ekstrem meliputi:<br><br>• <b>Hidrasi Ekstra dan Nutrisi:</b> Dokter tim mengoptimalkan konsumsi air putih dan pengaturan pola makan guna menjaga stamina pemain di tengah suhu panas atau lembap[cite: 1].<br>• <b>Simulasi dan Latihan Intensif:</b> Pelatih menerapkan program latihan dengan intensitas tinggi yang disesuaikan dengan prakiraan cuaca dari Badan Meteorologi, Klimatologi, dan Geofisika untuk membangun ketahanan fisik[cite: 1].<br>• <b>Penyesuaian Taktik Lapangan:</b> Saat menghadapi hujan deras atau lapangan licin, aliran bola dibuat lebih cepat dengan kombinasi operan pendek di area kecil guna meminimalkan risiko kesalahan kontrol[cite: 1].<br>• <b>Manajemen Pemulihan (Recovery):</b> Tim pelatih mengoptimalkan sesi pendinginan (cooling break) dan pemulihan otot secara intensif pasca-latihan di bawah cuaca ekstrem."
+                },
+                {
+                    id: 2,
+                    title: "Dampak Fluktuasi Iklim Terhadap Stabilitas Harga Komoditas Pangan",
+                    category: "Ekonomi",
+                    date: "5 September 2026",
+                    image: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?q=80&w=600&auto=format&fit=crop",
+                    snippet: "Analisis rantai pasok logistik nasional dalam menghadapi hambatan distribusi akibat cuaca ekstrem.",
+                    content: "Fluktuasi iklim menyebabkan penurunan produktivitas pertanian dan memicu ketidakstabilan harga komoditas pangan secara signifikan[cite: 1].<br><br><b>Dampak pada Produksi Pangan:</b><br>• Gagal panen akibat kekeringan panjang atau banjir yang merusak lahan pertanian padi, jagung, dan hortikultura.<br>• Pergeseran musim yang membuat petani kesulitan menentukan waktu tanam.<br>• Gangguan hama akibat suhu meningkat yang memicu ledakan populasi organisme pengganggu tanaman[cite: 1].<br><br><b>Dampak pada Stabilitas Harga:</b><br>• Penurunan pasokan membuat stok di pasar menipis.<br>• Lonjakan harga terjadi ketika pasokan turun sementara permintaan tetap.<br>• Memicu inflasi daerah akibat kenaikan harga komoditas utama seperti beras, cabai, dan bawang[cite: 1]."
+                },
+                {
+                    id: 3,
+                    title: "Revolusi AI Generatif, Grok, dan Grokbot: Motor Penggerak Utama Transformasi Komputasi Modern di Industri",
+                    category: "Technology",
+                    date: "5 September 2026",
+                    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=600&auto=format&fit=crop",
+                    snippet: "Perusahaan teknologi global berlomba mengintegrasikan pemrosesan data real-time berbasis kecerdasan buatan.",
+                    content: "Revolusi AI Generatif, Grok, dan Grokbot saat ini menjadi motor penggerak utama dalam transformasi komputasi di industri modern. Kombinasi teknologi ini mengubah cara perusahaan memproses data, mengambil keputusan, dan berinteraksi dengan pelanggan.<br><br>Berikut adalah gambaran bagaimana teknologi ini merevolusi lanskap komputasi industri saat ini:<br><br><b>1. Peran AI Generatif dalam Komputasi Modern</b><br>AI Generatif tidak lagi hanya sekadar membuat teks atau gambar, melainkan menjadi lapisan fundamental dalam infrastruktur komputasi perusahaan.<br>• <b>Otomatisasi Kode (Coding):</b> Insinyur perangkat lunak menggunakan AI untuk menulis, menguji, dan mendebug kode secara instan, mempercepat siklus pengembangan produk hingga berkali-kali lipat.<br>• <b>Sintesis Data Skala Besar:</b> AI mampu mengolah data mentah tak terstruktur (seperti laporan keuangan, hukum, atau medis) menjadi wawasan siap pakai dalam hitungan detik.<br><br><b>2. Grok dan Arsitektur Komputasi Real-Time</b><br>Grok, yang dikembangkan oleh xAI (dan terintegrasi erat dengan platform X), membawa keunggulan unik ke dalam ekosistem industri:<br>• <b>Akses Informasi Real-Time:</b> Berbeda dengan model AI tradisional yang hanya mengandalkan data pelatihan statis, Grok memiliki keunggulan komputasi karena terhubung langsung dengan arus data terkini dari dunia nyata. Ini sangat krusial bagi industri yang bergerak cepat seperti finansial dan logistik.<br>• <b>Pemahaman Konteks yang Tajam:</b> Desain arsitekturnya dirancang untuk memahami nuansa, sarkasme, dan tren terbaru, menjadikannya alat analitik sentimen pasar yang sangat kuat bagi korporasi.<br><br><b>3. Grokbot dan Efisiensi Operasional</b><br>Grokbot (agen atau bot berbasis teknologi Grok) berfungsi sebagai ujung tombak operasional industri:<br>• <b>Hiper-Otomatisasi Layanan Pelanggan:</b> Menggantikan chatbot konvensional yang kaku dengan respons yang dinamis, solutif, dan berbasis data terbaru.<br>• <b>Asisten Keputusan Eksekutif:</b> Membantu manajer menyaring ribuan email, matriks operasional, dan tren eksternal untuk memberikan rekomendasi tindakan yang taktis.<br><br><b>Perbandingan Dampak Komputasi: Tradisional vs Era AI Generatif & Grok</b><br><table class='w-full border-collapse border border-blue-200 my-4 text-sm'><thead><tr class='bg-blue-100 text-deepBlue'><th class='border border-blue-200 p-2'>Aspek Komputasi</th><th class='border border-blue-200 p-2'>Pendekatan Tradisional</th><th class='border border-blue-200 p-2'>Era AI Generatif & Grok</th></tr></thead><tbody><tr><td class='border border-blue-200 p-2 font-bold'>Pemrosesan Data</td><td class='border border-blue-200 p-2'>Terjadwal, berbasis data historis yang sudah usang.</td><td class='border border-blue-200 p-2'>Real-time, adaptif terhadap perubahan detik demi detik.</td></tr><tr><td class='border border-blue-200 p-2 font-bold'>Interaksi Sistem</td><td class='border border-blue-200 p-2'>Menggunakan perintah kode atau klik menu yang kaku.</td><td class='border border-blue-200 p-2'>Menggunakan bahasa alami manusia (Natural Language).</td></tr><tr><td class='border border-blue-200 p-2 font-bold'>Pengembangan Sistem</td><td class='border border-blue-200 p-2'>Membutuhkan waktu berbulan-bulan untuk coding manual.</td><td class='border border-blue-200 p-2'>Pembuatan prototipe cepat dibantu oleh komputasi AI.</td></tr></tbody></table><br><b>Dampak Nyata di Berbagai Sektor Industri</b><br>• <b>Sektor Finansial & Investasi:</b> Analisis pasar saham dan mitigasi risiko makroekonomi dilakukan secara instan berdasarkan berita global terbaru yang diserap oleh sistem seperti Grok.<br>• <b>Manufaktur & Supply Chain:</b> Grokbot membantu memprediksi kelangkaan bahan baku dengan memantau disrupsi global secara real-time dan otomatis mencari rute logistik alternatif.<br>• <b>Teknologi Informasi (TI):</b> Pusat data (data center) kini dikelola oleh model AI untuk mengoptimalkan konsumsi daya dan mendeteksi ancaman keamanan siber sebelum terjadi serangan.<br><br><b>Kesimpulan:</b> Integrasi AI Generatif, Grok, dan Grokbot dalam dunia komputasi industri bukan lagi sekadar opsi efisiensi, melainkan sebuah kebutuhan standar untuk tetap kompetitif di era digital yang bergerak super cepat."
+                },
+                {
+                    id: 4,
+                    title: "Gaya Hidup Minimalis dan Tren Hunian Pintar Berkelanjutan",
+                    category: "Trend",
+                    date: "4 September 2026",
+                    image: "https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=600&auto=format&fit=crop",
+                    snippet: "Masyarakat perkotaan mulai beralih ke konsep rumah ramah lingkungan dengan sirkulasi udara alami.",
+                    content: "Tren desain interior dan arsitektur rumah pintar di tahun 2026 berfokus pada efisiensi energi serta pemanfaatan ventilasi silang alami. Selain menghemat konsumsi listrik harian, konsep ini terbukti memberikan kenyamanan kesehatan mental yang lebih baik bagi penghuninya."
+                },
+                {
+                    id: 5,
+                    title: "Indeks Harga Saham Gabungan (IHSG) Ditutup Menguat di Sesi Perdagangan Pekan Ini",
+                    category: "Market",
+                    date: "4 September 2026",
+                    image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=600&auto=format&fit=crop",
+                    snippet: "Sektor perbankan dan energi terbarukan menjadi motor penggerak utama pertumbuhan bursa saham.",
+                    content: "Aktivitas transaksi di lantai bursa menunjukkan tren positif seiring meningkatnya kepercayaan investor asing maupun domestik terhadap fundamental ekonomi makro nasional. Saham-saham berkapitalisasi besar mencatatkan volume beli yang solid menjelang penutupan pekan perdagangan."
+                },
+                {
+                    id: 6,
+                    title: "Teknologi Radar Terbaru untuk Deteksi Dini Bencana Alam",
+                    category: "Badai & Siklon",
+                    date: "4 September 2026",
+                    image: "https://images.unsplash.com/photo-1534081333815-ae5019106622?q=80&w=600&auto=format&fit=crop",
+                    snippet: "Penerapan sensor Doppler berbasis AI mampu mendeteksi potensi anomali cuaca lebih awal.",
+                    content: "Inovasi klimatologi menghadirkan sistem radar beresolusi tinggi yang sanggup memindai pergerakan awan konvektif secara akurat, memberikan waktu evakuasi yang lebih panjang bagi warga di zona rawan bencana."
+                }
+            ],
+            artikel: [
+                {
+                    id: 401,
+                    title: "Dinamika Atmosfer Bumi dan Transformasi Sektor Ekonomi Hijau 2026",
+                    author: "Dr. Ir. Bayu Angkasa, M.Sc.",
+                    role: "Kepala Pusat Riset Klimatologi & Ekonomi Lingkungan",
+                    date: "4 September 2026",
+                    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=600&auto=format&fit=crop",
+                    snippet: "Kajian mendalam mengenai korelasi perubahan iklim global terhadap peta investasi dan ketahanan pasar.",
+                    content: "Transformasi menuju ekonomi hijau bukan lagi sekadar pilihan, melainkan kebutuhan mendesak bagi keberlangsungan industri global. Melalui pemodelan data terpadu, para ahli memetakan risiko ekonomi sekaligus peluang investasi baru pada sektor energi terbarukan dan infrastruktur tahan iklim."
+                },
+                {
+                    id: 402,
+                    title: "Ekosistem Digital dan Tren Pasar Finansial di Era Kecerdasan Buatan",
+                    author: "Ir. Dian Prameswari, MT",
+                    role: "Analis Teknologi & Pasar Finansial",
+                    date: "3 September 2026",
+                    image: "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?q=80&w=600&auto=format&fit=crop",
+                    snippet: "Bagaimana adaptasi teknologi digital mengubah pola konsumsi dan strategi investasi masyarakat modern.",
+                    content: "Kehadiran infrastruktur digital berkecepatan tinggi telah menciptakan ekosistem market yang sangat dinamis. Literasi finansial berbasis teknologi menjadi kunci utama bagi generasi muda agar dapat mengelola aset secara aman di tengah ketidakpastian global."
+                }
+            ]
+        };
+
+        // Render Hero Card Full-Width dengan Foto
+        function renderFeatured() {
+            const feat = database.featured;
+            const container = document.getElementById('featuredContainer');
+            container.innerHTML = `
+                <div class="grid grid-cols-1 lg:grid-cols-2">
+                    <div class="h-64 lg:h-auto overflow-hidden">
+                        <img src="${feat.image}" alt="${feat.title}" class="w-full h-full object-cover transform hover:scale-105 transition duration-500">
+                    </div>
+                    <div class="p-8 md:p-10 flex flex-col justify-center">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <span class="bg-brandBlue text-white text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-xl shadow-md">${feat.category}</span>
+                            <span class="text-xs font-medium text-slate-500">${feat.date}</span>
+                        </div>
+                        <h2 class="text-2xl md:text-3xl font-black text-deepBlue mb-4 leading-tight hover:text-brandBlue transition cursor-pointer" onclick="openDetail('${feat.title.replace(/'/g, "\\'")}', '${feat.category}', '${feat.date}', '${feat.content.replace(/'/g, "\\'")}', '${feat.image}')">
+                            ${feat.title}
+                        </h2>
+                        <p class="text-slate-600 mb-6 text-base leading-relaxed">${feat.snippet}</p>
+                        <div>
+                            <button onclick="openDetail('${feat.title.replace(/'/g, "\\'")}', '${feat.category}', '${feat.date}', '${feat.content.replace(/'/g, "\\'")}', '${feat.image}')" class="inline-flex items-center font-bold text-brandBlue hover:text-blue-700 transition group">
+                                Baca Berita Lengkap 
+                                <svg class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render Berita Cards dengan Foto
+        function renderNews(data) {
+            const container = document.getElementById('newsContainer');
+            container.innerHTML = "";
+            if (data.length === 0) {
+                container.innerHTML = `<div class="col-span-3 text-center py-12 text-slate-400 font-medium">Tidak ada berita yang ditemukan dalam kategori ini.</div>`;
+                return;
+            }
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-cardBlueBg rounded-3xl shadow-3d border border-blue-200 overflow-hidden hover:shadow-3d-hover transition-all duration-300 flex flex-col justify-between cursor-pointer group transform hover:-translate-y-1.5";
+                card.onclick = () => openDetail(item.title, item.category, item.date, item.content, item.image);
+                card.innerHTML = `
+                    <div>
+                        <div class="h-48 overflow-hidden">
+                            <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="text-xs font-bold uppercase tracking-wider text-deepBlue bg-blue-200 px-3 py-1 rounded-xl shadow-inner">${item.category}</span>
+                                <span class="text-xs font-medium text-slate-500">${item.date}</span>
+                            </div>
+                            <h4 class="text-lg font-bold text-deepBlue group-hover:text-brandBlue transition mb-2 leading-snug">${item.title}</h4>
+                            <p class="text-slate-600 text-sm mb-4 leading-relaxed">${item.snippet}</p>
+                        </div>
+                    </div>
+                    <div class="px-6 pb-6 pt-0">
+                        <span class="text-xs font-bold text-brandBlue flex items-center pt-3 border-t border-blue-200/60 group-hover:translate-x-1 transition transform">
+                            Baca Selengkapnya &rarr;
+                        </span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Render Artikel & Opini Cards dengan Foto
+        function renderArticles(data) {
+            const container = document.getElementById('articleContainer');
+            container.innerHTML = "";
+            if (data.length === 0) {
+                container.innerHTML = `<div class="col-span-2 text-center py-12 text-slate-400 font-medium">Tidak ada analisis pakar yang ditemukan.</div>`;
+                return;
+            }
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-cardBlueBg rounded-3xl shadow-3d border border-blue-200 overflow-hidden hover:shadow-3d-hover transition-all duration-300 flex flex-col justify-between cursor-pointer group transform hover:-translate-y-1.5";
+                card.onclick = () => openDetail(item.title, "Analisis Pakar", item.date, item.content, item.image, item.author, item.role);
+                card.innerHTML = `
+                    <div>
+                        <div class="h-52 overflow-hidden">
+                            <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center space-x-2 text-xs font-medium text-slate-500 mb-3">
+                                <span>${item.date}</span>
+                            </div>
+                            <h4 class="text-xl font-bold text-deepBlue group-hover:text-brandBlue transition mb-3 leading-snug">${item.title}</h4>
+                            <p class="text-slate-600 text-sm mb-4 leading-relaxed">${item.snippet}</p>
+                        </div>
+                    </div>
+                    <div class="px-6 pb-6 pt-0">
+                        <div class="flex items-center justify-between border-t border-blue-200/60 pt-4 text-xs">
+                            <div>
+                                <span class="font-bold text-deepBlue block">${item.author}</span>
+                                <span class="text-slate-500">${item.role}</span>
+                            </div>
+                            <span class="text-brandBlue font-bold group-hover:translate-x-1 transition transform">Baca Analisis &rarr;</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Filter Kategori via Menu Navbar Atas
+        function filterCategory(category) {
+            const navItems = ['Semua', 'Badai & Siklon', 'Olahraga', 'Ekonomi', 'Technology', 'Trend', 'Market'];
+            navItems.forEach(cat => {
+                const el = document.getElementById(`nav-${cat}`);
+                if (el) {
+                    if ((category === 'Semua' && cat === 'Semua') || (cat.toLowerCase() === category.toLowerCase())) {
+                        el.className = "text-brandBlue font-bold transition";
+                    } else {
+                        el.className = "hover:text-brandBlue transition text-slate-600";
+                    }
+                }
+            });
+            if (category === 'Semua') {
+                renderNews(database.berita);
+            } else {
+                const filtered = database.berita.filter(item => item.category.toLowerCase() === category.toLowerCase());
+                renderNews(filtered);
+            }
+            showHomeView();
+        }
+
+        // Pencarian Real-Time
+        function handleSearch() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            const filteredNews = database.berita.filter(item => 
+                item.title.toLowerCase().includes(keyword) || item.snippet.toLowerCase().includes(keyword) || item.category.toLowerCase().includes(keyword)
+            );
+            const filteredArticles = database.artikel.filter(item => 
+                item.title.toLowerCase().includes(keyword) || item.snippet.toLowerCase().includes(keyword) || item.author.toLowerCase().includes(keyword)
+            );
+            renderNews(filteredNews);
+            renderArticles(filteredArticles);
+        }
+
+        // Buka Halaman Detail Artikel
+        function openDetail(title, category, date, content, image, author = null, role = null) {
+            document.getElementById('detailTitle').innerText = title;
+            document.getElementById('detailCategory').innerText = category;
+            document.getElementById('detailDate').innerText = date;
+            document.getElementById('detailImage').src = image;
+            
+            document.getElementById('detailBody').innerHTML = `
+                <div>${content}</div>
+                <p class="mt-4 pt-4 border-t border-blue-200">Informasi dan pembaruan mendalam rubrik ${category} ini disajikan secara aktual melalui jaringan portal berita terintegrasi. Tetap pantau perkembangan informasinya hanya di portal kami.</p>
+            `;
+            const authorBox = document.getElementById('detailAuthorBox');
+            if (author) {
+                authorBox.classList.remove('hidden');
+                document.getElementById('detailAuthorName').innerText = author;
+                document.getElementById('detailAuthorRole').innerText = role;
+                document.getElementById('authorInitial').innerText = author.charAt(0);
+            } else {
+                authorBox.classList.add('hidden');
+            }
+            document.getElementById('homeView').classList.add('hidden');
+            document.getElementById('detailView').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Kembali ke Beranda
+        function showHomeView() {
+            document.getElementById('detailView').classList.add('hidden');
+            document.getElementById('homeView').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Inisialisasi Halaman
+        window.onload = function() {
+            renderFeatured();
+            renderNews(database.berita);
+            renderArticles(database.artikel);
+        };
+    </script>
+</body>
+</html>
