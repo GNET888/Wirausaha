@@ -27,55 +27,125 @@
             }
         }
     </script>
-    <style>
-        body {
-            @apply bg-gray-100 dark:bg-dark-bg text-secondary dark:text-dark-text;
-        }
-        .kompas-header {
-            @apply text-2xl font-bold text-primary border-b-4 border-primary pb-2 mb-4;
-        }
-        .terpopuler-header {
-            @apply text-xl font-bold text-white bg-primary text-center py-2 mb-4 rounded-t-lg;
-        }
-        .group:hover .group-hover-image {
-            transform: scale(1.05);
-        }
-        #main-header.sticky {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 50;
-            animation: slideDown 0.3s ease-in-out;
-            @apply shadow-lg;
-        }
-        @keyframes slideDown {
-            from { transform: translateY(-100%); }
-            to { transform: translateY(0); }
-        }
-        .placeholder-for-sticky { display: none; }
-        #main-header.sticky + .placeholder-for-sticky { display: block; }
-        
-        .article-title-hover:hover {
-            @apply text-primary cursor-pointer;
-        }
-        .terpopuler-item .number {
-            color: #ccc;
-            -webkit-text-stroke: 1px #005C9E;
-            text-stroke: 1px #005C9E;
-        }
-        .terpopuler-item:hover .number {
-            color: #005C9E;
-            -webkit-text-stroke: 0;
-            text-stroke: 0;
-        }
-        .page-view {
-            display: none;
-        }
-        .page-view.active {
-            display: block;
-        }
-    </style>
+<style>
+    /* Pengaturan Dasar & Transisi Halus */
+    body {
+        background-color: #f0f4f8;
+        color: #0f172a;
+        font-family: 'Inter', sans-serif;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    
+    /* --- Mode Gelap (Dark Mode) --- */
+    html.dark body {
+        background-color: #0b1120;
+        color: #f8fafc;
+    }
+    
+    html.dark #main-header,
+    html.dark .bg-white,
+    html.dark footer,
+    html.dark #article-page main,
+    html.dark #home-page main {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+        color: #f8fafc !important;
+    }
+    
+    html.dark .text-slate-900,
+    html.dark .text-slate-800,
+    html.dark .text-slate-700 {
+        color: #f1f5f9 !important;
+    }
+    
+    html.dark .text-slate-600,
+    html.dark .text-slate-500 {
+        color: #94a3b8 !important;
+    }
+    
+    html.dark .bg-sky-50 {
+        background-color: #0f172a !important;
+        border-color: #334155 !important;
+    }
+    
+    html.dark .border-sky-100,
+    html.dark .border-sky-200 {
+        border-color: #334155 !important;
+    }
+    
+    /* --- Komponen Kustom --- */
+    .kompas-header {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #0284c7;
+        border-bottom: 3px solid #0284c7;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .terpopuler-header {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: #ffffff;
+        background-color: #0284c7;
+        text-align: center;
+        padding: 0.5rem 0;
+        margin-bottom: 1rem;
+        border-radius: 0.5rem 0.5rem 0 0;
+    }
+    
+    /* Efek Gambar & Transisi */
+    .group .group-hover-image {
+        transition: transform 0.3s ease;
+    }
+    
+    .group:hover .group-hover-image {
+        transform: scale(1.05);
+    }
+    
+    /* Header Sticky */
+    #main-header.sticky {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        box-shadow: 0 4px 6px -1px rgba(2, 132, 199, 0.1);
+    }
+    
+    .placeholder-for-sticky {
+        display: none;
+    }
+    
+    #main-header.sticky+.placeholder-for-sticky {
+        display: block;
+    }
+    
+    .article-title-hover:hover {
+        color: #0284c7;
+        cursor: pointer;
+    }
+    
+    /* Penomoran Terpopuler */
+    .terpopuler-item .number {
+        color: #cbd5e1;
+        -webkit-text-stroke: 1px #0284c7;
+    }
+    
+    .terpopuler-item:hover .number {
+        color: #0284c7;
+        -webkit-text-stroke: 0;
+    }
+    
+    /* Sistem Halaman (SPA View) */
+    .page-view {
+        display: none;
+    }
+    
+    .page-view.active {
+        display: block;
+    }
+</style>
 </head>
 <body class="antialiased">
     <div id="root" class="bg-gray-100 dark:bg-dark-bg min-h-screen flex flex-col justify-between">
